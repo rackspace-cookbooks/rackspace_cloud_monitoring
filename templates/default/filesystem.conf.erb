@@ -1,0 +1,25 @@
+# CHEF MANAGED FILE: DO NOT EDIT
+# Controlling Cookbook: <%= @cookbook_name %>
+#
+
+type: agent.filesystem
+label: Filesystem check on <%= @mount %>
+disabled: <%= @disabled %>
+period: <%= @period %>
+timeout: <%= @timeout %>
+details:
+  target: <%= @mount %>
+<% if @alarm == true %>
+alarms:
+    alarm-disk-size:
+        label: usage on <%= @mount %>
+        notification_plan_id: <%= @notification_plan_id %>
+        criteria: |
+            if (percentage(metric['used'], metric['total']) > <%= @crit  %> ) {
+                return new AlarmStatus(CRITICAL, 'Disk usage is above <%= @crit %>%, #{used} out of #{total}');
+            }
+            if (percentage(metric['used'], metric['total']) > <%= @warn %> ) {
+                return new AlarmStatus(WARNING, 'Disk usage is above <%= @warn %>%, #{used} out of #{total}');
+            }
+            return new AlarmStatus(OK, 'Disk usage is below your warning threshold of <%= @warn %>%, #{used} out of #{total}');
+<% end %>
