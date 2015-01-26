@@ -2,6 +2,11 @@ module RackspaceCloudMonitoringCookbook
   # Helpers for the providers
   module Helpers
     include Chef::DSL::IncludeRecipe
+
+    def agent_conf_d
+      '/etc/rackspace-monitoring-agent.conf.d'
+    end
+
     def configure_package_repositories
       if %w(rhel fedora).include? node['platform_family']
         yum_repository 'monitoring' do
