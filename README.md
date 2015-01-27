@@ -40,11 +40,14 @@ The `rackspace_cloud_monitoring_service` resources manages the basic plumbing ne
 The :create action handles package installation. The internal configuration file contains just enough to get the service up and running, then loads extra configuration from a rackspace-monitoring-agent.conf.d directory.
 
 #### Parameters
+
 * `cloud_credentials_username` - Your cloud username 
 * `cloud_credentials_api_key` - Your cloud [api-key](http://www.rackspace.com/knowledge_center/article/view-and-reset-your-api-key)
 * `package_name` - Rackspace monitoring agent package name (default to `rackspace-monitoring-agent`)
 * `package_action` - Which action to run when `:create` default to `install`
+
 #### Actions
+
 * :create - Configures everything but the underlying operating system service
 * :delete - Removes everything
 * :start - Starts the underlying operating system service
