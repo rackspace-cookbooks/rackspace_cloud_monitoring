@@ -2,19 +2,16 @@
 # Controlling Cookbook: <%= @cookbook_name %>
 #
 
-type: agent.disk
-label: Disk check on <%= @target %>
+type: <%= @type %>
+label: <%= @type %>
 disabled: <%= @disabled %>
 period: <%= @period %>
 timeout: <%= @timeout %>
-details:
-  target: <%= @target %>
 <% if @alarm == true %>
 alarms:
-    alarm-disk:
-        label: usage on <%= @target %>
+  alarm-<%= @type %>:
+    label: <%= @type %> Usage
         notification_plan_id: <%= @notification_plan_id %>
         criteria: |
           <%= @alarm_criteria %>
 <% end %>
-

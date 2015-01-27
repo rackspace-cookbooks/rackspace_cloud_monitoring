@@ -15,23 +15,11 @@ alarms:
         label: Network receive rate on <%= @target %>
         notification_plan_id: <%= @notification_plan_id %>
         criteria: |
-            if (rate(metric['rx_bytes']) > <%= @recv_crit %> ) {
-              return new AlarmStatus(CRITICAL, "Network receive rate on <%= @target %> is above your critical threshold of <%= @recv_crit %>B/s");
-            }
-            if (rate(metric['rx_bytes']) > <%= @recv_warn %> ) {
-              return new AlarmStatus(WARNING, "Network receive rate on <%= @target %> is above your warning threshold of <%= @recv_warn %>B/s");
-            }
-            return new AlarmStatus(OK, "Network receive rate on <%= @target %> is below your warning threshold of <%= @recv_warn %>B/s");
+          <%= @alarm_criteria['recv'] %>
     alarm-network-transmit:
         label: Network transmit rate on <%= @target %>
         notification_plan_id: <%= @notification_plan_id %>
         criteria: |
-            if (rate(metric['tx_bytes']) > <%= @send_crit %>) {
-              return new AlarmStatus(CRITICAL, "Network transmit rate on <%= @target %> is above your critical threshold of <%= @send_crit %>B/s");
-            }
-            if (rate(metric['tx_bytes']) > <%= @send_warn %>) {
-              return new AlarmStatus(WARNING, "Network transmit rate on <%= @target %> is above your warning threshold of <%= @send_warn %>B/s");
-            }
-            return new AlarmStatus(OK, "Network transmit rate on <%= @target %> is below your warning threshold of <%= @send_warn %>B/s");
+          <%= @alarm_criteria['send'] %>
 <% end %>
 

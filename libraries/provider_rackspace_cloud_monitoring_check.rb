@@ -20,7 +20,7 @@ class Chef
           owner 'root'
           group 'root'
           mode '00644'
-          variables( parsed_template_variables('false') )
+          variables(parsed_template_variables('false'))
           notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
         end
       end
@@ -41,7 +41,7 @@ class Chef
           owner 'root'
           group 'root'
           mode '00644'
-          variables( parsed_template_variables('false') )
+          variables(parsed_template_variables('false'))
           notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
         end
       end
@@ -54,7 +54,7 @@ class Chef
           owner 'root'
           group 'root'
           mode '00644'
-          variables( parsed_template_variables('true') )
+          variables(parsed_template_variables('true'))
           notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
         end
       end

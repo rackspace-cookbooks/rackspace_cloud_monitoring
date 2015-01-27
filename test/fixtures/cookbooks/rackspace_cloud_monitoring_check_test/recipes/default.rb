@@ -1,0 +1,21 @@
+# Used by chefspec to create different context (attributes)
+
+rackspace_cloud_monitoring_check node['rackspace_cloud_monitoring_check_test']['type'] do
+  type node['rackspace_cloud_monitoring_check_test']['type']
+  alarm node['rackspace_cloud_monitoring_check_test']['alarm']
+  alarm_criteria node['rackspace_cloud_monitoring_check_test']['alarm_criteria']
+  period node['rackspace_cloud_monitoring_check_test']['period']
+  timeout node['rackspace_cloud_monitoring_check_test']['timeout']
+  critical node['rackspace_cloud_monitoring_check_test']['critical']
+  warning node['rackspace_cloud_monitoring_check_test']['warning']
+  variables node['rackspace_cloud_monitoring_check_test']['variables']
+  target node['rackspace_cloud_monitoring_check_test']['target']
+  target_hostname node['rackspace_cloud_monitoring_check_test']['target_hostname']
+  send_warning node['rackspace_cloud_monitoring_check_test']['send_warning']
+  send_critical node['rackspace_cloud_monitoring_check_test']['send_critical']
+  recv_warning node['rackspace_cloud_monitoring_check_test']['recv_warning']
+  recv_critical node['rackspace_cloud_monitoring_check_test']['recv_critical']
+  cookbook node['rackspace_cloud_monitoring_check_test']['cookbook']
+  template node['rackspace_cloud_monitoring_check_test']['template']
+  action :create
+end

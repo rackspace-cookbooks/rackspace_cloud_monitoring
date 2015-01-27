@@ -13,11 +13,5 @@ alarms:
         label: High Load Average
         notification_plan_id: <%= @notification_plan_id %>
         criteria: |
-            if (metric['5m'] > <%= @crit %> ) {
-              return new AlarmStatus(CRITICAL, '5 minute load average is #{5m}, above your critical threshold of <%= @crit %>');
-            }
-            if (metric['5m'] > <%= @warn %> ) {
-              return new AlarmStatus(WARNING, '5 minute load average is #{5m}, above your warning threshold of <%= @warn %>');
-            }
-            return new AlarmStatus(OK, '5 minute load average is #{5m}, below your warning threshold of <%= @warn %>');
+          <%= @alarm_criteria %>
 <% end %>

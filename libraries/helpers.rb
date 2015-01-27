@@ -38,6 +38,109 @@ module RackspaceCloudMonitoringCookbook
       fail 'Cloud credential api_key missing, cannot setup cloud-monitoring (please set :cloud_credentials_api_key)'
     end
 
+    def parsed_target_hostname
+      return new_resource.target_hostname if new_resource.target_hostname
+      node['cloud']['public_ipv4']
+    end
+
+    def parsed_target
+      return new_resource.target if new_resource.target
+      fail "You must define a :target for #{new_resource.type}" if %( disk filesystem network ).include?(new_resource.type)
+    end
+
+    def parsed_send_warning
+      return new_resource.send_warning if new_resource.send_warning
+      fail "You must define :send_warning for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+    end
+
+    def parsed_send_critical
+      return new_resource.send_critical if new_resource.send_critical
+      fail "You must define :send_critical for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+    end
+
+    def parsed_recv_warning
+      return new_resource.recv_warning if new_resource.recv_warning
+      fail "You must define :recv_warning for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+    end
+
+    def parsed_recv_critical
+      return new_resource.recv_critical if new_resource.recv_critical
+      fail "You must define :recv_critical for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+    end
+
+    # rubocop:disable MethodLength
+    # FIXME: improve this (store default alarm criteria in a file?)
+    def parsed_alarm_criteria
+      return new_resource.alarm_criteria if new_resource.alarm_criteria
+      case new_resource.type
+      when 'memory'
+        "if (percentage(metric['actual_used'], metric['total']) > #{new_resource.critical} ) {
+           return new AlarmStatus(CRITICAL, 'Memory usage is above your critical threshold of #{new_resource.critical}%');
+         }
+         if (percentage(metric['actual_used'], metric['total']) > #{new_resource.warning} ) {
+           return new AlarmStatus(WARNING, 'Memory usage is above your warning threshold of #{new_resource.warning}%');
+         }
+         return new AlarmStatus(OK, 'Memory usage is below your warning threshold of #{new_resource.warning}%');
+        "
+      when 'cpu'
+        "if (metric['usage_average'] > #{new_resource.critical} ) {
+           return new AlarmStatus(CRITICAL, 'CPU usage is \#{usage_average}%, above your critical threshold of #{new_resource.critical}%');
+         }
+         if (metric['usage_average'] > #{new_resource.warning} ) {
+           return new AlarmStatus(WARNING, 'CPU usage is \#{usage_average}%, above your warning threshold of #{new_resource.warning}%');
+         }
+         return new AlarmStatus(OK, 'CPU usage is \#{usage_average}%, below your warning threshold of #{new_resource.warning}%');
+       "
+      when 'load'
+        "if (metric['5m'] > #{new_resource.critical} ) {
+           return new AlarmStatus(CRITICAL, '5 minute load average is \#{5m}, above your critical threshold of #{new_resource.critical}');
+         }
+         if (metric['5m'] > #{new_resource.warning} ) {
+           return new AlarmStatus(WARNING, '5 minute load average is \#{5m}, above your warning threshold of #{new_resource.warning}');
+         }
+         return new AlarmStatus(OK, '5 minute load average is \#{5m}, below your warning threshold of #{new_resource.warning}');
+        "
+      when 'filesystem'
+        "if (percentage(metric['used'], metric['total']) > <%= @critical  %> ) {
+             return new AlarmStatus(CRITICAL, 'Disk usage is above #{new_resource.critical}%, \#{used} out of \#{total}');
+         }
+         if (percentage(metric['used'], metric['total']) > #{new_resource.warning} ) {
+             return new AlarmStatus(WARNING, 'Disk usage is above #{new_resource.warning}%, \#{used} out of \#{total}');
+         }
+         return new AlarmStatus(OK, 'Disk usage is below your warning threshold of #{new_resource.warning}%, \#{used} out of \#{total}');
+        "
+      when 'network'
+        {
+          'recv' =>
+            "if (rate(metric['rx_bytes']) > #{parsed_recv_critical} ) {
+            return new AlarmStatus(CRITICAL, 'Network receive rate on #{parsed_target} is above your critical threshold of #{parsed_recv_critical}B/s');
+          }
+          if (rate(metric['rx_bytes']) > #{parsed_recv_warning} ) {
+            return new AlarmStatus(WARNING, 'Network receive rate on #{parsed_target} is above your warning threshold of #{parsed_recv_warning}B/s');
+          }
+          return new AlarmStatus(OK, 'Network receive rate on #{parsed_target} is below your warning threshold of #{parsed_recv_warning}B/s');",
+          'send' =>
+            "if (rate(metric['tx_bytes']) > #{parsed_send_critical}) {
+            return new AlarmStatus(CRITICAL, 'Network transmit rate on #{parsed_target} is above your critical threshold of #{parsed_send_critical}B/s');
+          }
+          if (rate(metric['tx_bytes']) > #{parsed_send_warning}) {
+            return new AlarmStatus(WARNING, 'Network transmit rate on #{parsed_target} is above your warning threshold of #{parsed_send_warning}B/s');
+          }
+          return new AlarmStatus(OK, 'Network transmit rate on #{parsed_target} is below your warning threshold of #{parsed_send_warning}B/s');"
+        }
+      when 'http'
+        "if (metric['code'] regex '4[0-9][0-9]') {
+           return new AlarmStatus(CRITICAL, 'HTTP server responding with 4xx status');
+         }
+         if (metric['code'] regex '5[0-9][0-9]') {
+           return new AlarmStatus(CRITICAL, 'HTTP server responding with 5xx status');
+         }
+         return new AlarmStatus(OK, 'HTTP server is functioning normally');
+        "
+      end
+    end
+    # rubocop:enable MethodLength
+
     def parsed_template_from_type
       return new_resource.template if new_resource.template
       case new_resource.type
@@ -56,19 +159,30 @@ module RackspaceCloudMonitoringCookbook
       when 'http'
         'http.conf.erb'
       else
+        Chef::Log.info("Using custom monitor for #{new_resource.type}")
         'custom_check.conf.erb'
       end
     end
 
     def parsed_template_variables(disabled)
       {
-      disabled: disabled,
-      alarm: new_resource.alarm,
-      period: new_resource.period,
-      timeout: new_resource.timeout,
-      critical: new_resource.critical,
-      warning: new_resource.warning
-      }.merge(new_resource.variables)
+        cookbook: new_resource.cookbook,
+        disabled: disabled,
+        type: new_resource.type,
+        alarm: new_resource.alarm,
+        alarm_criteria: parsed_alarm_criteria,
+        period: new_resource.period,
+        timeout: new_resource.timeout,
+        critical: new_resource.critical,
+        warning: new_resource.warning,
+        target: parsed_target,
+        target_hostname: parsed_target_hostname,
+        send_warning: parsed_send_warning,
+        send_critical: parsed_send_critical,
+        recv_warning: parsed_recv_warning,
+        recv_critical: parsed_recv_critical,
+        variables: new_resource.variables
+      }
     end
   end
 end
