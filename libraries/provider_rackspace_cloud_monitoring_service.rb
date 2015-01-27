@@ -30,7 +30,7 @@ class Chef
         end
 
         # Set directory to put agent configuration
-        directory '/etc/rackspace-monitoring-agent.conf.d' do
+        directory agent_conf_d do
           owner 'root'
           group 'root'
           mode 00755
@@ -46,7 +46,7 @@ class Chef
           action :remove
         end
         directory 'rackspace-monitoring-agent-confd' do
-          path '/etc/rackspace-monitoring-agent.conf.d'
+          path agent_conf_d
           owner 'root'
           group 'root'
           mode 00755

@@ -23,4 +23,21 @@ if defined?(ChefSpec)
   def reload_rackspace_cloud_monitoring_service(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:rackspace_cloud_monitoring_service, :reload, resource_name)
   end
+
+  # check
+  def create_rackspace_cloud_monitoring_check(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rackspace_cloud_monitoring_check, :create, resource_name)
+  end
+
+  def delete_rackspace_cloud_monitoring_check(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rackspace_cloud_monitoring_check, :delete, resource_name)
+  end
+
+  def disable_rackspace_cloud_monitoring_check(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rackspace_cloud_monitoring_check, :disable, resource_name)
+  end
+
+  def enable_rackspace_cloud_monitoring_check(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rackspace_cloud_monitoring_check, :enable, resource_name)
+  end
 end
