@@ -3,7 +3,7 @@ require 'chefspec/berkshelf'
 require_relative 'rackspace_cloud_monitoring_service_shared'
 require_relative 'rackspace_cloud_monitoring_check_shared'
 
-::LOG_LEVEL = ENV['CHEFSPEC_LOG_LEVEL'].to_sym || :fatal
+::LOG_LEVEL = ENV['CHEFSPEC_LOG_LEVEL'] ? ENV['CHEFSPEC_LOG_LEVEL'].to_sym : :fatal
 
 def stub_resources
   allow(File).to receive(:size?).with('/etc/rackspace-monitoring-agent.cfg').and_return(nil)
