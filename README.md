@@ -165,6 +165,11 @@ rackspace_cloud_monitoring_check 'http' do
 end
 ```
 
+## References
+[Available check types](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types.html)
+[Common checks attributes](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/service-checks.html)
+[Cloud monitoring concepts](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/Concepts.html#concepts-key-terms)
+
 ## Contributing
 
 1. Fork the repository on Github
