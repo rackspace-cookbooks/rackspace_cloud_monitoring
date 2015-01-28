@@ -143,21 +143,8 @@ module RackspaceCloudMonitoringCookbook
 
     def parsed_template_from_type
       return new_resource.template if new_resource.template
-      case new_resource.type
-      when 'memory'
-        'memory.conf.erb'
-      when 'cpu'
-        'cpu.conf.erb'
-      when 'load'
-        'load.conf.erb'
-      when 'filesystem'
-        'filesystem.conf.erb'
-      when 'disk'
-        'disk.conf.erb'
-      when 'network'
-        'network.conf.erb'
-      when 'http'
-        'http.conf.erb'
+      if %w( memory cpu load filesystem disk network http).include?(new_resource.type)
+        "#{new_resource.type}.conf.erb"
       else
         Chef::Log.info("Using custom monitor for #{new_resource.type}")
         'custom_check.conf.erb'
