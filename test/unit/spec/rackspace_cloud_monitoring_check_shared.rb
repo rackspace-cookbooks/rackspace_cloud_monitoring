@@ -12,7 +12,8 @@ shared_examples_for 'agent config' do |agent|
     params = [
       'disabled: false',
       'period: 90',
-      'timeout: 30'
+      'timeout: 30',
+      'notification_plan_id: npTechnicalContactsEmail'
     ]
     params.each do |param|
       expect(chef_run).to render_file("/etc/rackspace-monitoring-agent.conf.d/#{agent}.yaml").with_content(param)

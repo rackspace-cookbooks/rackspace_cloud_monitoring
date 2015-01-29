@@ -89,39 +89,39 @@ module RackspaceCloudMonitoringCookbook
       case new_resource.type
       when 'agent.memory'
         "if (percentage(metric['actual_used'], metric['total']) > #{new_resource.critical} ) {
-           return new AlarmStatus(CRITICAL, 'Memory usage is above your critical threshold of #{new_resource.critical}%');
-         }
-         if (percentage(metric['actual_used'], metric['total']) > #{new_resource.warning} ) {
-           return new AlarmStatus(WARNING, 'Memory usage is above your warning threshold of #{new_resource.warning}%');
-         }
-         return new AlarmStatus(OK, 'Memory usage is below your warning threshold of #{new_resource.warning}%');
+            return new AlarmStatus(CRITICAL, 'Memory usage is above your critical threshold of #{new_resource.critical}%');
+          }
+          if (percentage(metric['actual_used'], metric['total']) > #{new_resource.warning} ) {
+            return new AlarmStatus(WARNING, 'Memory usage is above your warning threshold of #{new_resource.warning}%');
+          }
+          return new AlarmStatus(OK, 'Memory usage is below your warning threshold of #{new_resource.warning}%');
         "
       when 'agent.cpu'
         "if (metric['usage_average'] > #{new_resource.critical} ) {
-           return new AlarmStatus(CRITICAL, 'CPU usage is \#{usage_average}%, above your critical threshold of #{new_resource.critical}%');
-         }
-         if (metric['usage_average'] > #{new_resource.warning} ) {
-           return new AlarmStatus(WARNING, 'CPU usage is \#{usage_average}%, above your warning threshold of #{new_resource.warning}%');
-         }
-         return new AlarmStatus(OK, 'CPU usage is \#{usage_average}%, below your warning threshold of #{new_resource.warning}%');
+            return new AlarmStatus(CRITICAL, 'CPU usage is \#{usage_average}%, above your critical threshold of #{new_resource.critical}%');
+          }
+          if (metric['usage_average'] > #{new_resource.warning} ) {
+            return new AlarmStatus(WARNING, 'CPU usage is \#{usage_average}%, above your warning threshold of #{new_resource.warning}%');
+          }
+          return new AlarmStatus(OK, 'CPU usage is \#{usage_average}%, below your warning threshold of #{new_resource.warning}%');
        "
       when 'agent.load'
         "if (metric['5m'] > #{new_resource.critical} ) {
-           return new AlarmStatus(CRITICAL, '5 minute load average is \#{5m}, above your critical threshold of #{new_resource.critical}');
-         }
-         if (metric['5m'] > #{new_resource.warning} ) {
-           return new AlarmStatus(WARNING, '5 minute load average is \#{5m}, above your warning threshold of #{new_resource.warning}');
-         }
-         return new AlarmStatus(OK, '5 minute load average is \#{5m}, below your warning threshold of #{new_resource.warning}');
+            return new AlarmStatus(CRITICAL, '5 minute load average is \#{5m}, above your critical threshold of #{new_resource.critical}');
+          }
+          if (metric['5m'] > #{new_resource.warning} ) {
+            return new AlarmStatus(WARNING, '5 minute load average is \#{5m}, above your warning threshold of #{new_resource.warning}');
+          }
+          return new AlarmStatus(OK, '5 minute load average is \#{5m}, below your warning threshold of #{new_resource.warning}');
         "
       when 'agent.filesystem'
         "if (percentage(metric['used'], metric['total']) > <%= @critical  %> ) {
-             return new AlarmStatus(CRITICAL, 'Disk usage is above #{new_resource.critical}%, \#{used} out of \#{total}');
-         }
-         if (percentage(metric['used'], metric['total']) > #{new_resource.warning} ) {
-             return new AlarmStatus(WARNING, 'Disk usage is above #{new_resource.warning}%, \#{used} out of \#{total}');
-         }
-         return new AlarmStatus(OK, 'Disk usage is below your warning threshold of #{new_resource.warning}%, \#{used} out of \#{total}');
+              return new AlarmStatus(CRITICAL, 'Disk usage is above #{new_resource.critical}%, \#{used} out of \#{total}');
+          }
+          if (percentage(metric['used'], metric['total']) > #{new_resource.warning} ) {
+              return new AlarmStatus(WARNING, 'Disk usage is above #{new_resource.warning}%, \#{used} out of \#{total}');
+          }
+          return new AlarmStatus(OK, 'Disk usage is below your warning threshold of #{new_resource.warning}%, \#{used} out of \#{total}');
         "
       when 'agent.network'
         {
@@ -176,6 +176,7 @@ module RackspaceCloudMonitoringCookbook
         timeout: new_resource.timeout,
         critical: new_resource.critical,
         warning: new_resource.warning,
+        notification_plan_id: new_resource.notification_plan_id,
         target: parsed_target,
         target_hostname: parsed_target_hostname,
         send_warning: parsed_send_warning,

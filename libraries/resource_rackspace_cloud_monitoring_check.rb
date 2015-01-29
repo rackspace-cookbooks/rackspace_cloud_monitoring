@@ -16,6 +16,7 @@ class Chef
       attribute :critical, kind_of: Fixnum, default: 95
       attribute :warning, kind_of: Fixnum, default: 90
       attribute :variables, kind_of: Hash, default: {}
+      attribute :notification_plan_id, kind_of: String, default: 'npTechnicalContactsEmail'
       # Required on some checks (filesystem/disk/network)
       attribute :target, kind_of: String, default: nil
       attribute :target_hostname, kind_of: String, default: nil

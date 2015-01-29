@@ -77,6 +77,7 @@ The :create action handles package installation. The internal configuration file
 * `:timeout` - optional - The timeout in seconds for a check. This has to be less than the period - Default : 30
 * `:critical` - optional - Threshold for the default alarm criteria - Default : 95
 * `:warning` - optional - Threshold for the default alarm criteria - Default : 90
+* `:notification_plan_id` - optional - Notification plan for the alarms - Default : npTechnicalContactsEmail
 * `:variables` - optional - Additional variables you want to use in the template.`variable_name => 'value'`. It will allow to add attributes to the agent configuration if you need more than the default ones. [Here is an example](https://github.com/rackspace-cookbooks/rackspace_cloud_monitoring/blob/master/test/fixtures/cookbooks/rackspace_cloud_monitoring_check_test/recipes/http.rb#L8-L9) for `remote.http`. If you want to create your own `:template` you can use all the `:variables` with `@variable_name`.
 
 ##### Required on some checks (filesystem/disk/network)
@@ -184,9 +185,10 @@ end
 ```
 
 ## References
-[Available check types](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types.html)
-[Common checks attributes](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/service-checks.html)
-[Cloud monitoring concepts](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/Concepts.html#concepts-key-terms)
+
+* [Available check types](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types.html)
+* [Common checks attributes](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/service-checks.html)
+* [Cloud monitoring concepts](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/Concepts.html#concepts-key-terms)
 
 ## Contributing
 
