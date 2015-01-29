@@ -151,7 +151,7 @@ module RackspaceCloudMonitoringCookbook
           }
           return new AlarmStatus(OK, 'Network transmit rate on #{parsed_target} is below your warning threshold of #{parsed_send_warning}B/s');"
         }
-      when 'agent.http'
+      when 'remote.http'
         "if (metric['code'] regex '4[0-9][0-9]') {
            return new AlarmStatus(CRITICAL, 'HTTP server responding with 4xx status');
          }
