@@ -184,7 +184,8 @@ module RackspaceCloudMonitoringCookbook
         recv_warning: parsed_recv_warning,
         recv_critical: parsed_recv_critical,
         plugin_filename: parsed_plugin_filename,
-        plugin_args: new_resource.plugin_args,
+        # Using inspect so it dumps a string representing an array
+        plugin_args: new_resource.plugin_args.inspect,
         plugin_timeout: new_resource.plugin_timeout,
         variables: new_resource.variables
       }

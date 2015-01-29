@@ -94,7 +94,7 @@ The :create action handles package installation. The internal configuration file
 
 ##### Plugins attributes
 * `:plugin_url` - optional if `:plugin_filename` has been provided - Url from where to download a plugin. i.e https://raw.githubusercontent.com/racker/rackspace-monitoring-agent-plugins-contrib/master/chef_node_checkin.py
-* `:plugin_args` - optional - Arguments to pass to the plugin
+* `:plugin_args` - optional - Arguments to pass to the plugin (Array)
 * `:plugin_filename` - optional if `:plugin_url` has been provided, mandatory otherwise.
 * `:plugin_timeout` - optional - The timeout for the plugin execution - Default : 30
 

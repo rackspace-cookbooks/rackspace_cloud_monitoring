@@ -208,7 +208,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.plugin'
           node.set['rackspace_cloud_monitoring_check_test']['plugin_url'] = 'http://www.dummyhot.com/dummyplugin.py'
-          node.set['rackspace_cloud_monitoring_check_test']['plugin_args'] = '--dummyargs'
+          node.set['rackspace_cloud_monitoring_check_test']['plugin_args'] = ['--dummyargs']
         end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
       end
       it 'downloads the plugin(with a filename based on the url)' do
@@ -218,7 +218,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
         expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.plugin.yaml').with_content('file: dummyplugin.py')
       end
       it 'configures the agent.yaml and passes the args' do
-        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.plugin.yaml').with_content('args: --dummyargs')
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.plugin.yaml').with_content('args: ["--dummyargs"]')
       end
     end
     context 'rackspace_cloud_monitoring_check with plugin_url and plugin_filename' do
