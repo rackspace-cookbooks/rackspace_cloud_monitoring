@@ -115,7 +115,7 @@ module RackspaceCloudMonitoringCookbook
           return new AlarmStatus(OK, '5 minute load average is \#{5m}, below your warning threshold of #{new_resource.warning}');
         "
       when 'agent.filesystem'
-        "if (percentage(metric['used'], metric['total']) > <%= @critical  %> ) {
+        "if (percentage(metric['used'], metric['total']) > #{new_resource.critical} ) {
               return new AlarmStatus(CRITICAL, 'Disk usage is above #{new_resource.critical}%, \#{used} out of \#{total}');
           }
           if (percentage(metric['used'], metric['total']) > #{new_resource.warning} ) {
