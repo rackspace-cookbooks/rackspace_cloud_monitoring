@@ -9,7 +9,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
     log_level: LOG_LEVEL,
     platform: 'ubuntu',
     version: '12.04',
-    step_into: ['rackspace_cloud_monitoring_service_test', 'rackspace_cloud_monitoring_check']
+    step_into: ['rackspace_cloud_monitoring_check']
   }
 
   context 'Any check' do
@@ -26,7 +26,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node.set['rackspace_cloud_monitoring_check_test']['critical'] = 444
           node.set['rackspace_cloud_monitoring_check_test']['warning'] = 333
           node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_eth'
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it 'configure my agent with all me resources parameters' do
         params = [
@@ -51,9 +51,17 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::cpu')
+        end.converge('rackspace_cloud_monitoring_check_test::cpu')
       end
       it_behaves_like 'agent config', 'agent.cpu'
+      it 'creates default alarms' do
+        agent_config = '/etc/rackspace-monitoring-agent.conf.d/agent.cpu.yaml'
+        expect(chef_run).to render_file(agent_config).with_content('metric[\'usage_average\'] > 95')
+        expect(chef_run).to render_file(agent_config).with_content('metric[\'usage_average\'] > 90')
+        expect(chef_run).to render_file(agent_config).with_content('CPU usage is #{usage_average}%, above your critical threshold of 95%')
+        expect(chef_run).to render_file(agent_config).with_content('CPU usage is #{usage_average}%, above your warning threshold of 90%')
+        expect(chef_run).to render_file(agent_config).with_content('CPU usage is #{usage_average}%, below your warning threshold of 90%')
+      end
     end
   end
   context 'HTTP check' do
@@ -61,29 +69,55 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::http')
+        end.converge('rackspace_cloud_monitoring_check_test::http')
       end
       it_behaves_like 'agent config', 'remote.http'
+      it 'creates default alarms' do
+        agent_config = '/etc/rackspace-monitoring-agent.conf.d/remote.http.yaml'
+        expect(chef_run).to render_file(agent_config).with_content("metric['code'] regex '4[0-9][0-9]'")
+        expect(chef_run).to render_file(agent_config).with_content("metric['code'] regex '5[0-9][0-9]")
+        expect(chef_run).to render_file(agent_config).with_content('HTTP server responding with 4xx status')
+        expect(chef_run).to render_file(agent_config).with_content('HTTP server responding with 5xx status')
+        expect(chef_run).to render_file(agent_config).with_content('HTTP server is functioning normally')
+      end
     end
   end
+
   context 'Load check' do
     context 'rackspace_cloud_monitoring_check for load' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::load')
+        end.converge('rackspace_cloud_monitoring_check_test::load')
       end
       it_behaves_like 'agent config', 'agent.load'
+      it 'creates default alarms' do
+        agent_config = '/etc/rackspace-monitoring-agent.conf.d/agent.load.yaml'
+        expect(chef_run).to render_file(agent_config).with_content("metric['5m'] > 95")
+        expect(chef_run).to render_file(agent_config).with_content("metric['5m'] > 90")
+        expect(chef_run).to render_file(agent_config).with_content('5 minute load average is #{5m}, above your critical threshold of 95')
+        expect(chef_run).to render_file(agent_config).with_content('5 minute load average is #{5m}, above your warning threshold of 90')
+        expect(chef_run).to render_file(agent_config).with_content('5 minute load average is #{5m}, below your warning threshold of 90')
+      end
     end
   end
+
   context 'Memory check' do
     context 'rackspace_cloud_monitoring_check for memory' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::memory')
+        end.converge('rackspace_cloud_monitoring_check_test::memory')
       end
       it_behaves_like 'agent config', 'agent.memory'
+      it 'creates default alarms' do
+        agent_config = '/etc/rackspace-monitoring-agent.conf.d/agent.memory.yaml'
+        expect(chef_run).to render_file(agent_config).with_content("percentage(metric['actual_used'], metric['total']) > 95")
+        expect(chef_run).to render_file(agent_config).with_content("percentage(metric['actual_used'], metric['total']) > 90")
+        expect(chef_run).to render_file(agent_config).with_content('Memory usage is above your critical threshold of 95%')
+        expect(chef_run).to render_file(agent_config).with_content('Memory usage is above your warning threshold of 90%')
+        expect(chef_run).to render_file(agent_config).with_content('Memory usage is below your warning threshold of 90%')
+      end
     end
   end
 
@@ -92,7 +126,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::network')
+        end.converge('rackspace_cloud_monitoring_check_test::network')
       end
       it_behaves_like 'agent config', 'agent.network'
     end
@@ -102,7 +136,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.network'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it_behaves_like 'raise error about missing parameters'
     end
@@ -117,9 +151,9 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node.set['rackspace_cloud_monitoring_check_test']['recv_warning'] = 7777
           node.set['rackspace_cloud_monitoring_check_test']['recv_critical'] = 6666
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
-      it 'configures the agent.yaml with the corrects thresholds' do
+      it 'configures the agent.yaml with the corrects alarm thresholds' do
         agent_config = '/etc/rackspace-monitoring-agent.conf.d/agent.network.yaml'
         expect(chef_run).to render_file(agent_config).with_content('transmit rate on dummy_target is above your warning threshold of 9999')
         expect(chef_run).to render_file(agent_config).with_content('transmit rate on dummy_target is above your critical threshold of 8888')
@@ -134,7 +168,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::disk')
+        end.converge('rackspace_cloud_monitoring_check_test::disk')
       end
       it_behaves_like 'agent config', 'agent.disk'
     end
@@ -144,7 +178,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.disk'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it_behaves_like 'raise error about missing parameters'
     end
@@ -155,7 +189,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::filesystem')
+        end.converge('rackspace_cloud_monitoring_check_test::filesystem')
       end
       it_behaves_like 'agent config', 'agent.filesystem'
     end
@@ -164,8 +198,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.filesystem'
-          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it_behaves_like 'raise error about missing parameters'
     end
@@ -175,10 +208,19 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.filesystem'
           node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_target'
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it 'configures the agent.yaml with the correct target' do
         expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.filesystem.yaml').with_content('target: dummy_target')
+      end
+      it 'creates default alarms' do
+        agent_config = '/etc/rackspace-monitoring-agent.conf.d/agent.filesystem.yaml'
+        expect(chef_run).to render_file(agent_config).with_content("percentage(metric['used'], metric['total']) > 95")
+        expect(chef_run).to render_file(agent_config).with_content("percentage(metric['used'], metric['total']) > 90")
+        expect(chef_run).to render_file(agent_config).with_content('Disk usage is above 95%, #{used} out of #{total}')
+        expect(chef_run).to render_file(agent_config).with_content('Disk usage is above 90%, #{used} out of #{total}')
+        expect(chef_run).to render_file(agent_config).with_content('Disk usage is below your warning threshold of 90%, #{used} out of #{total}')
       end
     end
   end
@@ -188,7 +230,13 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::plugin')
+        end.converge('rackspace_cloud_monitoring_check_test::plugin')
+      end
+      it 'creates the plugin directory' do
+        expect(chef_run).to create_directory('/usr/lib/rackspace-monitoring-agent/plugins')
+      end
+      it 'downloads the plugin awesome_plugin.py from rackspace_cloud_monitoring_check_test::plugin' do
+        expect(chef_run).to create_remote_file('/usr/lib/rackspace-monitoring-agent/plugins/awesome_plugin.py')
       end
       it_behaves_like 'agent config', 'agent.plugin'
     end
@@ -198,7 +246,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.plugin'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it_behaves_like 'raise error about missing parameters'
     end
@@ -208,8 +256,8 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.plugin'
           node.set['rackspace_cloud_monitoring_check_test']['plugin_url'] = 'http://www.dummyhot.com/dummyplugin.py'
-          node.set['rackspace_cloud_monitoring_check_test']['plugin_args'] = '--dummyargs'
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+          node.set['rackspace_cloud_monitoring_check_test']['plugin_args'] = ['--dummyargs']
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it 'downloads the plugin(with a filename based on the url)' do
         expect(chef_run).to create_remote_file('/usr/lib/rackspace-monitoring-agent/plugins/dummyplugin.py')
@@ -218,7 +266,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
         expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.plugin.yaml').with_content('file: dummyplugin.py')
       end
       it 'configures the agent.yaml and passes the args' do
-        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.plugin.yaml').with_content('args: --dummyargs')
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.plugin.yaml').with_content('args: ["--dummyargs"]')
       end
     end
     context 'rackspace_cloud_monitoring_check with plugin_url and plugin_filename' do
@@ -228,7 +276,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.plugin'
           node.set['rackspace_cloud_monitoring_check_test']['plugin_url'] = 'http://www.dummyhot.com/dummyplugin.py'
           node.set['rackspace_cloud_monitoring_check_test']['plugin_filename'] = 'dummy_filename.py'
-        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+        end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it 'configures the agent.yaml and set the plugin_filename according to :plugin_filename' do
         expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.plugin.yaml').with_content('file: dummy_filename.py')
@@ -238,5 +286,4 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
       end
     end
   end
-
 end

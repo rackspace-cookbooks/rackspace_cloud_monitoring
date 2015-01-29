@@ -16,9 +16,9 @@ details:
 
 <% if @alarm == true %>
 alarms:
-    alarm-cpu:
-        label: CPU Usage
-        notification_plan_id: <%= @notification_plan_id %>
-        criteria: |
-          <%= @alarm_criteria %>
+  alarm-plugin:
+    label: Check from <%= @plugin_filename %>
+    notification_plan_id: <%= @notification_plan_id %>
+    criteria: |
+      <%= @alarm_criteria %>
 <% end %>
