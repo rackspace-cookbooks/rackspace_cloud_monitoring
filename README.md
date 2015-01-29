@@ -91,6 +91,12 @@ The :create action handles package installation. The internal configuration file
 * `:recv_warning` - required for network only - Threshold for the default receive alarm criteria - Default : 56000
 * `:recv_critical` - required for network only - Threshold for the default send alarm criteria - Default : 76000
 
+##### Plugins attributes
+* `:plugin_url` - optional if `:plugin_filename` has been provided - Url from where to download a plugin. i.e https://raw.githubusercontent.com/racker/rackspace-monitoring-agent-plugins-contrib/master/chef_node_checkin.py
+* `:plugin_args` - optional - Arguments to pass to the plugin
+* `:plugin_filename` - optional if `:plugin_url` has been provided, mandatory otherwise.
+* `:plugin_timeout` - optional - The timeout for the plugin execution - Default : 30
+
 ##### Template config
 
 * `:cookbook` - optional - Where to look for the agent yaml template - Default : 'rackspace_cloud_monitoring'
@@ -102,6 +108,7 @@ The :create action handles package installation. The internal configuration file
   * [agent.filesystem](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.filesystem)
   * [agent.disk](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.disk)
   * [agent.network](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.network)
+  * [agent.plugin](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.plugin)
   * [remote.http](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-remote.html#section-ct-remote.http)
   * anything else will load `custom_check.conf.erb` and all the parameters and variables will be available in the template. [Rackspace check types](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types.html)
 
@@ -161,6 +168,17 @@ rackspace_cloud_monitoring_check 'http' do
   alarm true
   variables 'url' => "http://#{hostname}/healthcheck",
             'body' => 'Status OK'
+  action :create
+end
+```
+#### Create a plugin check chef_node_checkin(rackspace-monitoring-agent-plugins-contrib)
+```
+rackspace_cloud_monitoring_check 'agent.plugin' do
+  type 'agent.plugin'
+  plugin_url 'https://raw.githubusercontent.com/racker/rackspace-monitoring-agent-plugins-contrib/master/chef_node_checkin.py'
+  plugin_args '--debug'
+  plugin_filename 'awesome_plugin.py'
+  alarm true
   action :create
 end
 ```
