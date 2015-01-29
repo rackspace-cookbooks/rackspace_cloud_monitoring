@@ -32,7 +32,7 @@ rackspace_cloud_monitoring_service 'default' do
 end
 
 rackspace_cloud_monitoring_check 'filesystem' do
-  type 'filesystem'
+  type 'agent.filesystem'
   target '/var'
   alarm true
   action :create
@@ -96,13 +96,13 @@ The :create action handles package installation. The internal configuration file
 * `:cookbook` - optional - Where to look for the agent yaml template - Default : 'rackspace_cloud_monitoring'
 * `:template` - optional - Where to look for the agent yaml template - Default : '`:type`.conf.erb' or `custom_check.conf.erb`
 * `:type` - required - Which kind of agent to configure. Supported agents :
-  * [memory](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.memory)
-  * [cpu](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.cpu)
-  * [load](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.load)
-  * [filesystem](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.filesystem)
-  * [disk](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.disk)
-  * [network](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.network)
-  * [http](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-remote.html#section-ct-remote.http)
+  * [agent.memory](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.memory)
+  * [agent.cpu](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.cpu)
+  * [agent.load](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.load)
+  * [agent.filesystem](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.filesystem)
+  * [agent.disk](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.disk)
+  * [agent.network](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-agent.html#section-ct-agent.network)
+  * [remote.http](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types-remote.html#section-ct-remote.http)
   * anything else will load `custom_check.conf.erb` and all the parameters and variables will be available in the template. [Rackspace check types](http://docs.rackspace.com/cm/api/v1.0/cm-devguide/content/appendix-check-types.html)
 
 #### Actions
@@ -115,7 +115,7 @@ The :create action handles package installation. The internal configuration file
 #### CPU agent with alarm enabled
 ```
 rackspace_cloud_monitoring_check 'Cpu check' do
-  type 'cpu'
+  type 'agent.cpu'
   alarm true
   action :create
 end
@@ -156,7 +156,7 @@ details:
 ```
 hostname = 'dummyhost.com'
 rackspace_cloud_monitoring_check 'http' do
-  type 'http'
+  type 'remote.http'
   target_hostname hostname
   alarm true
   variables 'url' => "http://#{hostname}/healthcheck",

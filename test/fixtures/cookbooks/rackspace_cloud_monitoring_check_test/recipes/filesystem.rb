@@ -1,7 +1,7 @@
 # comments!
 
-rackspace_cloud_monitoring_check 'filesystem' do
-  type 'filesystem'
+rackspace_cloud_monitoring_check 'agent.filesystem' do
+  type 'agent.filesystem'
   target '/var'
   alarm true
   action :create

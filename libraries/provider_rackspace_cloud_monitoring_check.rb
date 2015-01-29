@@ -33,7 +33,7 @@ class Chef
           action :delete
           notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
         end
-        delete_plugin if new_resource.type == 'plugin'
+        delete_plugin if new_resource.type == 'agent.plugin'
       end
 
       action :enable do

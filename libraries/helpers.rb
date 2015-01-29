@@ -49,35 +49,35 @@ module RackspaceCloudMonitoringCookbook
 
     def parsed_target
       return new_resource.target if new_resource.target
-      fail "You must define a :target for #{new_resource.type}" if %( disk filesystem network ).include?(new_resource.type)
+      fail "You must define a :target for #{new_resource.type}" if %( agent.disk agent.filesystem agent.network ).include?(new_resource.type)
     end
 
     def parsed_send_warning
       return new_resource.send_warning if new_resource.send_warning
-      fail "You must define :send_warning for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+      fail "You must define :send_warning for #{new_resource.type} if you enabled alarm" if new_resource.type == 'agent.network' && new_resource.alarm
     end
 
     def parsed_send_critical
       return new_resource.send_critical if new_resource.send_critical
-      fail "You must define :send_critical for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+      fail "You must define :send_critical for #{new_resource.type} if you enabled alarm" if new_resource.type == 'agent.network' && new_resource.alarm
     end
 
     def parsed_recv_warning
       return new_resource.recv_warning if new_resource.recv_warning
-      fail "You must define :recv_warning for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+      fail "You must define :recv_warning for #{new_resource.type} if you enabled alarm" if new_resource.type == 'agent.network' && new_resource.alarm
     end
 
     def parsed_recv_critical
       return new_resource.recv_critical if new_resource.recv_critical
-      fail "You must define :recv_critical for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+      fail "You must define :recv_critical for #{new_resource.type} if you enabled alarm" if new_resource.type == 'agent.network' && new_resource.alarm
     end
 
     # Get filename from URI if not defined
     def parsed_plugin_filename
       return new_resource.plugin_filename if new_resource.plugin_filename
-      if new_resource.plugin_url && new_resource.type == 'plugin'
+      if new_resource.plugin_url && new_resource.type == 'agent.plugin'
         File.basename(URI(new_resource.plugin_url).request_uri)
-      elsif new_resource.type == 'plugin'
+      elsif new_resource.type == 'agent.plugin'
         fail "You must specify at least a :plugin_filename for #{new_resource.name}"
       end
     end
@@ -87,7 +87,7 @@ module RackspaceCloudMonitoringCookbook
     def parsed_alarm_criteria
       return new_resource.alarm_criteria if new_resource.alarm_criteria
       case new_resource.type
-      when 'memory'
+      when 'agent.memory'
         "if (percentage(metric['actual_used'], metric['total']) > #{new_resource.critical} ) {
            return new AlarmStatus(CRITICAL, 'Memory usage is above your critical threshold of #{new_resource.critical}%');
          }
@@ -96,7 +96,7 @@ module RackspaceCloudMonitoringCookbook
          }
          return new AlarmStatus(OK, 'Memory usage is below your warning threshold of #{new_resource.warning}%');
         "
-      when 'cpu'
+      when 'agent.cpu'
         "if (metric['usage_average'] > #{new_resource.critical} ) {
            return new AlarmStatus(CRITICAL, 'CPU usage is \#{usage_average}%, above your critical threshold of #{new_resource.critical}%');
          }
@@ -105,7 +105,7 @@ module RackspaceCloudMonitoringCookbook
          }
          return new AlarmStatus(OK, 'CPU usage is \#{usage_average}%, below your warning threshold of #{new_resource.warning}%');
        "
-      when 'load'
+      when 'agent.load'
         "if (metric['5m'] > #{new_resource.critical} ) {
            return new AlarmStatus(CRITICAL, '5 minute load average is \#{5m}, above your critical threshold of #{new_resource.critical}');
          }
@@ -114,7 +114,7 @@ module RackspaceCloudMonitoringCookbook
          }
          return new AlarmStatus(OK, '5 minute load average is \#{5m}, below your warning threshold of #{new_resource.warning}');
         "
-      when 'filesystem'
+      when 'agent.filesystem'
         "if (percentage(metric['used'], metric['total']) > <%= @critical  %> ) {
              return new AlarmStatus(CRITICAL, 'Disk usage is above #{new_resource.critical}%, \#{used} out of \#{total}');
          }
@@ -123,7 +123,7 @@ module RackspaceCloudMonitoringCookbook
          }
          return new AlarmStatus(OK, 'Disk usage is below your warning threshold of #{new_resource.warning}%, \#{used} out of \#{total}');
         "
-      when 'network'
+      when 'agent.network'
         {
           'recv' =>
             "if (rate(metric['rx_bytes']) > #{parsed_recv_critical} ) {
@@ -142,7 +142,7 @@ module RackspaceCloudMonitoringCookbook
           }
           return new AlarmStatus(OK, 'Network transmit rate on #{parsed_target} is below your warning threshold of #{parsed_send_warning}B/s');"
         }
-      when 'http'
+      when 'agent.http'
         "if (metric['code'] regex '4[0-9][0-9]') {
            return new AlarmStatus(CRITICAL, 'HTTP server responding with 4xx status');
          }
@@ -157,11 +157,11 @@ module RackspaceCloudMonitoringCookbook
 
     def parsed_template_from_type
       return new_resource.template if new_resource.template
-      if %w( memory cpu load filesystem disk network http plugin).include?(new_resource.type)
+      if %w( agent.memory agent.cpu agent.load agent.filesystem agent.disk agent.network remote.http agent.plugin).include?(new_resource.type)
         "#{new_resource.type}.conf.erb"
       else
         Chef::Log.info("Using custom monitor for #{new_resource.type}")
-        'custom_check.conf.erb'
+        'agent.custom.conf.erb'
       end
     end
 
