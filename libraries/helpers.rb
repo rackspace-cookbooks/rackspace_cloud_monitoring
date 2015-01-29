@@ -96,6 +96,15 @@ module RackspaceCloudMonitoringCookbook
           }
           return new AlarmStatus(OK, 'Memory usage is below your warning threshold of #{new_resource.warning}%');
         "
+      when 'agent.disk'
+        "if (percentage(metric['used'], metric['total']) > #{new_resource.critical} ) {
+            return new AlarmStatus(CRITICAL, 'Disk usage is above your critical threshold of #{new_resource.critical}%');
+          }
+          if (percentage(metric['used'], metric['total']) > #{new_resource.warning} ) {
+            return new AlarmStatus(WARNING, 'Disk usage is above your warning threshold of #{new_resource.warning}%');
+          }
+          return new AlarmStatus(OK, 'Disk usage is below your warning threshold of #{new_resource.warning}%');
+        "
       when 'agent.cpu'
         "if (metric['usage_average'] > #{new_resource.critical} ) {
             return new AlarmStatus(CRITICAL, 'CPU usage is \#{usage_average}%, above your critical threshold of #{new_resource.critical}%');
