@@ -12,137 +12,239 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     step_into: ['rackspace_cloud_monitoring_service_test', 'rackspace_cloud_monitoring_check']
   }
 
-  context 'rackspace_cloud_monitoring_check for cpu' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::cpu')
-    end
-    it_behaves_like 'CPU config'
-    it_behaves_like 'agent with default config', 'cpu'
-  end
-  context 'rackspace_cloud_monitoring_check for disk' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::disk')
-    end
-    it_behaves_like 'disk config'
-    it_behaves_like 'agent with default config', 'disk'
-  end
-  context 'rackspace_cloud_monitoring_check for filesystem' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::filesystem')
-    end
-    it_behaves_like 'filesystem config'
-    it_behaves_like 'agent with default config', 'filesystem'
-  end
-  context 'rackspace_cloud_monitoring_check for http' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::http')
-    end
-    it_behaves_like 'http config'
-    it_behaves_like 'agent with default config', 'http'
-  end
-  context 'rackspace_cloud_monitoring_check for load' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::load')
-    end
-    it_behaves_like 'load config'
-    it_behaves_like 'agent with default config', 'load'
-  end
-  context 'rackspace_cloud_monitoring_check for memory' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::memory')
-    end
-    it_behaves_like 'memory config'
-    it_behaves_like 'agent with default config', 'memory'
-  end
-  context 'rackspace_cloud_monitoring_check for network' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::network')
-    end
-    it_behaves_like 'network config'
-    it_behaves_like 'agent with default config', 'network'
-  end
-
-  context 'rackspace_cloud_monitoring_check built from parameters' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-        node.set['rackspace_cloud_monitoring_check_test']['type'] = 'network'
-        node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-        # node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria'] = 'custom_criteria'
-        node.set['rackspace_cloud_monitoring_check_test']['period'] = 666
-        node.set['rackspace_cloud_monitoring_check_test']['timeout'] = 555
-        node.set['rackspace_cloud_monitoring_check_test']['critical'] = 444
-        node.set['rackspace_cloud_monitoring_check_test']['warning'] = 333
-        node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_eth'
-        node.set['rackspace_cloud_monitoring_check_test']['send_warning'] = 66_600
-        node.set['rackspace_cloud_monitoring_check_test']['send_critical'] = 55_500
-        node.set['rackspace_cloud_monitoring_check_test']['recv_warning'] = 44_400
-        node.set['rackspace_cloud_monitoring_check_test']['recv_critical'] = 33_300
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
-    end
-    it 'configure my agent with all me resources parameters' do
-      params = [
-        'type: agent.network',
-        'disabled: false',
-        'period: 666',
-        'timeout: 555',
-        'target: dummy_eth',
-        'alarm-network-receive',
-        '> 55500',
-        '> 66600',
-        '> 33300',
-        '> 44400',
-        'alarm-network-receive',
-        'alarm-network-receive'
-      ]
-      params.each do |param|
-        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/network.yaml').with_content(param)
+  context 'Any check' do
+    context 'rackspace_cloud_monitoring_check built from parameters' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'network'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+          node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria']['recv'] = 'custom_recv_criteria'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria']['send'] = 'custom_send_criteria'
+          node.set['rackspace_cloud_monitoring_check_test']['period'] = 666
+          node.set['rackspace_cloud_monitoring_check_test']['timeout'] = 555
+          node.set['rackspace_cloud_monitoring_check_test']['critical'] = 444
+          node.set['rackspace_cloud_monitoring_check_test']['warning'] = 333
+          node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_eth'
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it 'configure my agent with all me resources parameters' do
+        params = [
+          'type: agent.network',
+          'disabled: false',
+          'period: 666',
+          'timeout: 555',
+          'target: dummy_eth',
+          'alarm-network-receive',
+          'custom_recv_criteria',
+          'custom_send_criteria'
+        ]
+        params.each do |param|
+          expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/network.yaml').with_content(param)
+        end
       end
     end
   end
 
-  context 'rackspace_cloud_monitoring_check for network with missing mandatory attribute' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-        node.set['rackspace_cloud_monitoring_check_test']['type'] = 'network'
-        node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+  context 'CPU check' do
+    context 'rackspace_cloud_monitoring_check for cpu' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::cpu')
+      end
+      it_behaves_like 'agent config', 'cpu'
+      it_behaves_like 'agent with default config', 'cpu'
     end
-    it_behaves_like 'raise error about missing parameters'
   end
-  context 'rackspace_cloud_monitoring_check for disk with missing mandatory attribute' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-        node.set['rackspace_cloud_monitoring_check_test']['type'] = 'disk'
-        node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+  context 'HTTP check' do
+    context 'rackspace_cloud_monitoring_check for http' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::http')
+      end
+      it_behaves_like 'http config'
+      it_behaves_like 'agent with default config', 'http'
     end
-    it_behaves_like 'raise error about missing parameters'
   end
-  context 'rackspace_cloud_monitoring_check for filesystem with missing mandatory attribute' do
-    cached(:chef_run) do
-      ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
-        node_resources(node)
-        node.set['rackspace_cloud_monitoring_check_test']['type'] = 'filesystem'
-        node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
-      end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+  context 'Load check' do
+    context 'rackspace_cloud_monitoring_check for load' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::load')
+      end
+      it_behaves_like 'agent config', 'load'
+      it_behaves_like 'agent with default config', 'load'
     end
-    it_behaves_like 'raise error about missing parameters'
   end
+  context 'Memory check' do
+    context 'rackspace_cloud_monitoring_check for memory' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::memory')
+      end
+      it_behaves_like 'agent config', 'memory'
+      it_behaves_like 'agent with default config', 'memory'
+    end
+  end
+
+
+  context 'Network check' do
+    context 'rackspace_cloud_monitoring_check' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::network')
+      end
+      it_behaves_like 'agent config', 'network'
+      it_behaves_like 'agent with default config', 'network'
+    end
+    context 'rackspace_cloud_monitoring_check with missing mandatory attribute' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'network'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it_behaves_like 'raise error about missing parameters'
+    end
+    context 'rackspace_cloud_monitoring_check with custom alarm thresholds' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'network'
+          node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_target'
+          node.set['rackspace_cloud_monitoring_check_test']['send_warning'] = 9999
+          node.set['rackspace_cloud_monitoring_check_test']['send_critical'] = 8888
+          node.set['rackspace_cloud_monitoring_check_test']['recv_warning'] = 7777
+          node.set['rackspace_cloud_monitoring_check_test']['recv_critical'] = 6666
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it 'configures the agent.yaml with the corrects thresholds' do
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/network.yaml').with_content('transmit rate on dummy_target is above your warning threshold of 9999')
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/network.yaml').with_content('transmit rate on dummy_target is above your critical threshold of 8888')
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/network.yaml').with_content('receive rate on dummy_target is above your warning threshold of 7777')
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/network.yaml').with_content('receive rate on dummy_target is above your critical threshold of 6666')
+      end
+    end
+  end
+
+  context 'Disk check' do
+    context 'rackspace_cloud_monitoring_check for disk' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::disk')
+      end
+      it_behaves_like 'agent config', 'disk'
+      it_behaves_like 'agent with default config', 'disk'
+    end
+    context 'rackspace_cloud_monitoring_check for disk with missing mandatory attribute' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'disk'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it_behaves_like 'raise error about missing parameters'
+    end
+  end
+
+  context 'Filesystem check' do
+    context 'rackspace_cloud_monitoring_check for filesystem' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::filesystem')
+      end
+      it_behaves_like 'agent config', 'filesystem'
+      it_behaves_like 'agent with default config', 'filesystem'
+    end
+    context 'rackspace_cloud_monitoring_check with missing mandatory attribute' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'filesystem'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it_behaves_like 'raise error about missing parameters'
+    end
+    context 'rackspace_cloud_monitoring_check with custom target' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'filesystem'
+          node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_target'
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it 'configures the agent.yaml with the correct target' do
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/filesystem.yaml').with_content('target: dummy_target')
+      end
+    end
+  end
+
+  context 'Plugin check' do
+    context 'rackspace_cloud_monitoring_check' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::plugin')
+      end
+      it_behaves_like 'agent config', 'plugin'
+      it_behaves_like 'agent with default config', 'plugin'
+    end
+    context 'rackspace_cloud_monitoring_check with missing mandatory attribute' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'plugin'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it_behaves_like 'raise error about missing parameters'
+    end
+    context 'rackspace_cloud_monitoring_check with plugin_url and args' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'plugin'
+          node.set['rackspace_cloud_monitoring_check_test']['plugin_url'] = 'http://www.dummyhot.com/dummyplugin.py'
+          node.set['rackspace_cloud_monitoring_check_test']['plugin_args'] = '--dummyargs'
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it 'downloads the plugin(with a filename based on the url)' do
+        expect(chef_run).to create_remote_file('/usr/lib/rackspace-monitoring-agent/plugins/dummyplugin.py')
+      end
+      it 'configures the agent.yaml with the correct plugin' do
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/plugin.yaml').with_content('file: dummyplugin.py')
+      end
+      it 'configures the agent.yaml and passes the args' do
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/plugin.yaml').with_content('args: --dummyargs')
+      end
+    end
+    context 'rackspace_cloud_monitoring_check with plugin_url and plugin_filename' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'plugin'
+          node.set['rackspace_cloud_monitoring_check_test']['plugin_url'] = 'http://www.dummyhot.com/dummyplugin.py'
+          node.set['rackspace_cloud_monitoring_check_test']['plugin_filename'] = 'dummy_filename.py'
+        end.converge('rackspace_cloud_monitoring_service_test::default', 'rackspace_cloud_monitoring_check_test::default')
+      end
+      it 'configures the agent.yaml and set the plugin_filename according to :plugin_filename' do
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/plugin.yaml').with_content('file: dummy_filename.py')
+      end
+      it 'downloads the plugin(with a filename based on :plugin_filename)' do
+        expect(chef_run).to create_remote_file('/usr/lib/rackspace-monitoring-agent/plugins/dummy_filename.py')
+      end
+    end
+  end
+
 end

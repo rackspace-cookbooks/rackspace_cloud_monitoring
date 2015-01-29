@@ -36,3 +36,4 @@ suites:
       - recipe[rackspace_cloud_monitoring_check_test::memory]
       - recipe[rackspace_cloud_monitoring_check_test::network]
       - recipe[rackspace_cloud_monitoring_check_test::custom]
+      - recipe[rackspace_cloud_monitoring_check_test::plugin]

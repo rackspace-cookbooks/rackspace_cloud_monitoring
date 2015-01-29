@@ -7,6 +7,10 @@ module RackspaceCloudMonitoringCookbook
       '/etc/rackspace-monitoring-agent.conf.d'
     end
 
+    def plugin_path
+      '/usr/lib/rackspace-monitoring-agent/plugins'
+    end
+
     def configure_package_repositories
       if %w(rhel fedora).include? node['platform_family']
         yum_repository 'monitoring' do
@@ -66,6 +70,16 @@ module RackspaceCloudMonitoringCookbook
     def parsed_recv_critical
       return new_resource.recv_critical if new_resource.recv_critical
       fail "You must define :recv_critical for #{new_resource.type} if you enabled alarm" if new_resource.type == 'network' && new_resource.alarm
+    end
+
+    # Get filename from URI if not defined
+    def parsed_plugin_filename
+      return new_resource.plugin_filename if new_resource.plugin_filename
+      if new_resource.plugin_url && new_resource.type == 'plugin'
+        File.basename(URI(new_resource.plugin_url).request_uri)
+      elsif new_resource.type == 'plugin'
+        fail "You must specify at least a :plugin_filename for #{new_resource.name}"
+      end
     end
 
     # rubocop:disable MethodLength
@@ -143,7 +157,7 @@ module RackspaceCloudMonitoringCookbook
 
     def parsed_template_from_type
       return new_resource.template if new_resource.template
-      if %w( memory cpu load filesystem disk network http).include?(new_resource.type)
+      if %w( memory cpu load filesystem disk network http plugin).include?(new_resource.type)
         "#{new_resource.type}.conf.erb"
       else
         Chef::Log.info("Using custom monitor for #{new_resource.type}")
@@ -168,6 +182,9 @@ module RackspaceCloudMonitoringCookbook
         send_critical: parsed_send_critical,
         recv_warning: parsed_recv_warning,
         recv_critical: parsed_recv_critical,
+        plugin_filename: parsed_plugin_filename,
+        plugin_args: new_resource.plugin_args,
+        plugin_timeout: new_resource.plugin_timeout,
         variables: new_resource.variables
       }
     end
