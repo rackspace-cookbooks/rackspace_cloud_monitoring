@@ -10,7 +10,7 @@ class Chef
 
       # Common to all checks
       attribute :alarm, kind_of: [TrueClass, FalseClass], default: false
-      attribute :alarm_criteria, kind_of: String, default: nil
+      attribute :alarm_criteria, kind_of: [String, Hash], default: nil
       attribute :period, kind_of: Fixnum, default: 90
       attribute :timeout, kind_of: Fixnum, default: 30
       attribute :critical, kind_of: Fixnum, default: 95
@@ -23,6 +23,11 @@ class Chef
       attribute :send_critical, kind_of: Fixnum, default: 76_000
       attribute :recv_warning, kind_of: Fixnum, default: 56_000
       attribute :recv_critical, kind_of: Fixnum, default: 76_000
+      # Plugins attributes
+      attribute :plugin_url, kind_of: String, default: nil
+      attribute :plugin_args, kind_of: String, default: nil
+      attribute :plugin_filename, kind_of: String, default: nil
+      attribute :plugin_timeout, kind_of: Fixnum, default: 30
       # Template config
       attribute :cookbook, kind_of: String, default: 'rackspace_cloud_monitoring'
       attribute :template, kind_of: String, default: nil

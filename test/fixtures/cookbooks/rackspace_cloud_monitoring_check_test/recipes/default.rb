@@ -15,6 +15,9 @@ rackspace_cloud_monitoring_check node['rackspace_cloud_monitoring_check_test']['
   send_critical node['rackspace_cloud_monitoring_check_test']['send_critical']
   recv_warning node['rackspace_cloud_monitoring_check_test']['recv_warning']
   recv_critical node['rackspace_cloud_monitoring_check_test']['recv_critical']
+  plugin_url node['rackspace_cloud_monitoring_check_test']['plugin_url']
+  plugin_filename node['rackspace_cloud_monitoring_check_test']['plugin_filename']
+  plugin_args node['rackspace_cloud_monitoring_check_test']['plugin_args']
   cookbook node['rackspace_cloud_monitoring_check_test']['cookbook']
   template node['rackspace_cloud_monitoring_check_test']['template']
   action :create

@@ -14,6 +14,8 @@ class Chef
 
       action :create do
         define_rackspace_monitoring_agent_service
+        # Download plugin if the parameter is set
+        download_plugin if new_resource.plugin_url
         template "#{agent_conf_d}/#{new_resource.name}.yaml" do
           cookbook new_resource.cookbook
           source parsed_template_from_type
@@ -31,6 +33,7 @@ class Chef
           action :delete
           notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
         end
+        delete_plugin if new_resource.type == 'agent.plugin'
       end
 
       action :enable do
@@ -65,6 +68,25 @@ class Chef
         service 'rackspace-monitoring-agent' do
           supports start: true, status: true, stop: true, restart: true
           action :nothing
+        end
+      end
+
+      def download_plugin
+        directory plugin_path do
+          action :create
+          recursive true
+        end
+        Chef::Log.info("Downloading plugin from #{new_resource.plugin_url} to #{plugin_path}/#{parsed_plugin_filename}")
+        remote_file "#{plugin_path}/#{parsed_plugin_filename}" do
+          source new_resource.plugin_url
+        end
+      end
+
+      def delete_plugin
+        Chef::Log.info("Deleting plugin #{plugin_path}/#{parsed_plugin_filename}")
+        file "#{plugin_path}/#{parsed_plugin_filename}" do
+          action :delete
+          notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
         end
       end
     end
