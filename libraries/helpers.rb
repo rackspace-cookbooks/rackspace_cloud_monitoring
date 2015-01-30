@@ -32,6 +32,11 @@ module RackspaceCloudMonitoringCookbook
       end
     end
 
+    def parsed_label
+      return new_resource.label if new_resource.label
+      "Check for #{new_resource.name}, (type: #{new_resource.type})"
+    end
+
     def parsed_cloud_credentials_username
       return new_resource.cloud_credentials_username if new_resource.cloud_credentials_username
       fail 'Cloud credential username missing, cannot setup cloud-monitoring (please set :cloud_credentials_username)'
@@ -177,6 +182,7 @@ module RackspaceCloudMonitoringCookbook
     def parsed_template_variables(disabled)
       {
         cookbook: new_resource.cookbook,
+        label: parsed_label,
         disabled: disabled,
         type: new_resource.type,
         alarm: new_resource.alarm,

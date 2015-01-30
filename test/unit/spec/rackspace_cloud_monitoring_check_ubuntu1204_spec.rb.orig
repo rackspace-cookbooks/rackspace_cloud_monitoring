@@ -1,24 +1,23 @@
 require_relative 'spec_helper'
 
-describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
+describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
   before do
     stub_resources
   end
 
-  CENTOS_CHECK_OPTS = {
+  UBUNTU1204_CHECK_OPTS = {
     log_level: LOG_LEVEL,
-    platform: 'centos',
-    version: '6.5',
+    platform: 'ubuntu',
+    version: '12.04',
     step_into: ['rackspace_cloud_monitoring_check']
   }
 
   context 'Any check' do
     context 'rackspace_cloud_monitoring_check built from parameters' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.network'
-          node.set['rackspace_cloud_monitoring_check_test']['label'] = 'Awesome label, for an awesome check'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
           node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria']['recv'] = 'custom_recv_criteria'
           node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria']['send'] = 'custom_send_criteria'
@@ -34,7 +33,6 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
           'type: agent.network',
           'disabled: false',
           'period: 666',
-          'label: Awesome label, for an awesome check',
           'timeout: 555',
           'target: dummy_eth',
           'alarm-network-receive',
@@ -51,7 +49,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'CPU check' do
     context 'rackspace_cloud_monitoring_check for cpu' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::cpu')
       end
@@ -69,7 +67,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'HTTP check' do
     context 'rackspace_cloud_monitoring_check for http' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::http')
       end
@@ -88,7 +86,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'Load check' do
     context 'rackspace_cloud_monitoring_check for load' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::load')
       end
@@ -107,7 +105,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'Memory check' do
     context 'rackspace_cloud_monitoring_check for memory' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::memory')
       end
@@ -126,7 +124,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'Network check' do
     context 'rackspace_cloud_monitoring_check' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::network')
       end
@@ -134,7 +132,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check with missing mandatory attribute' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.network'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
@@ -144,7 +142,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check with custom alarm thresholds' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.network'
           node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_target'
@@ -168,7 +166,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'Disk check' do
     context 'rackspace_cloud_monitoring_check for disk' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::disk')
       end
@@ -176,7 +174,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check for disk with missing mandatory attribute' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.disk'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
@@ -189,7 +187,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'Filesystem check' do
     context 'rackspace_cloud_monitoring_check for filesystem' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::filesystem')
       end
@@ -197,7 +195,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check with missing mandatory attribute' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.filesystem'
         end.converge('rackspace_cloud_monitoring_check_test::default')
@@ -206,7 +204,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check with custom target' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.filesystem'
           node.set['rackspace_cloud_monitoring_check_test']['target'] = 'dummy_target'
@@ -230,7 +228,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
   context 'Plugin check' do
     context 'rackspace_cloud_monitoring_check' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
         end.converge('rackspace_cloud_monitoring_check_test::plugin')
       end
@@ -244,7 +242,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check with missing mandatory attribute' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.plugin'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
@@ -254,7 +252,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check with plugin_url and args' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.plugin'
           node.set['rackspace_cloud_monitoring_check_test']['plugin_url'] = 'http://www.dummyhot.com/dummyplugin.py'
@@ -273,7 +271,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
     end
     context 'rackspace_cloud_monitoring_check with plugin_url and plugin_filename' do
       cached(:chef_run) do
-        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.plugin'
           node.set['rackspace_cloud_monitoring_check_test']['plugin_url'] = 'http://www.dummyhot.com/dummyplugin.py'

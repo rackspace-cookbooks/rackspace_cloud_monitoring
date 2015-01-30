@@ -18,6 +18,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 14.04' do
         ChefSpec::SoloRunner.new(UBUNTU1404_CHECK_OPTS) do |node|
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.network'
+          node.set['rackspace_cloud_monitoring_check_test']['label'] = 'Awesome label, for an awesome check'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
           node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria']['recv'] = 'custom_recv_criteria'
           node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria']['send'] = 'custom_send_criteria'
@@ -33,6 +34,7 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 14.04' do
           'type: agent.network',
           'disabled: false',
           'period: 666',
+          'label: Awesome label, for an awesome check',
           'timeout: 555',
           'target: dummy_eth',
           'alarm-network-receive',

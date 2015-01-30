@@ -2,6 +2,7 @@
 
 rackspace_cloud_monitoring_check node['rackspace_cloud_monitoring_check_test']['type'] do
   type node['rackspace_cloud_monitoring_check_test']['type']
+  label node['rackspace_cloud_monitoring_check_test']['label']
   alarm node['rackspace_cloud_monitoring_check_test']['alarm']
   alarm_criteria node['rackspace_cloud_monitoring_check_test']['alarm_criteria']
   period node['rackspace_cloud_monitoring_check_test']['period']
