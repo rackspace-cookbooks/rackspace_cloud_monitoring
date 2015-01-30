@@ -16,6 +16,7 @@ shared_examples_for 'agent config' do |agent|
       'disabled: false',
       'period: 90',
       'timeout: 30',
+      "Check for #{agent}, (type: #{agent})",
       'notification_plan_id: npTechnicalContactsEmail'
     ]
     params.each do |param|
