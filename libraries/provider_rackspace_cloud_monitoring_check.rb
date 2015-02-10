@@ -16,15 +16,7 @@ class Chef
         define_rackspace_monitoring_agent_service
         # Download plugin if the parameter is set
         download_plugin if new_resource.plugin_url
-        template "#{agent_conf_d}/#{new_resource.name}.yaml" do
-          cookbook new_resource.cookbook
-          source parsed_template_from_type
-          owner 'root'
-          group 'root'
-          mode '00644'
-          variables(parsed_template_variables('false'))
-          notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
-        end
+        generate_agent_config(false, parsed_target)
       end
 
       action :delete do
@@ -38,27 +30,41 @@ class Chef
 
       action :enable do
         define_rackspace_monitoring_agent_service
-        template "#{agent_conf_d}/#{new_resource.name}.yaml" do
-          cookbook new_resource.cookbook
-          source parsed_template_from_type
-          owner 'root'
-          group 'root'
-          mode '00644'
-          variables(parsed_template_variables('false'))
-          notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
-        end
+        generate_agent_config(false, parsed_target)
       end
 
       action :disable do
         define_rackspace_monitoring_agent_service
-        template "#{agent_conf_d}/#{new_resource.name}.yaml" do
-          cookbook new_resource.cookbook
-          source parsed_template_from_type
-          owner 'root'
-          group 'root'
-          mode '00644'
-          variables(parsed_template_variables('true'))
-          notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
+        generate_agent_config(true, parsed_target)
+      end
+
+      def generate_agent_config(disabled = false, targets = nil)
+        if targets && !targets.empty?
+          targets.each do |target|
+            sanitized_target = sanitize_target(target, new_resource.type)
+            variables_with_current_target = parsed_template_variables(disabled)
+            # replace 'target' by the current processsed target rather than the whole array
+            variables_with_current_target['target'] = target
+            template "#{agent_conf_d}/#{new_resource.name}.#{sanitized_target}.yaml" do
+              cookbook new_resource.cookbook
+              source parsed_template_from_type
+              owner 'root'
+              group 'root'
+              mode '00644'
+              variables(variables_with_current_target)
+              notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
+            end
+          end
+        else
+          template "#{agent_conf_d}/#{new_resource.name}.yaml" do
+            cookbook new_resource.cookbook
+            source parsed_template_from_type
+            owner 'root'
+            group 'root'
+            mode '00644'
+            variables(parsed_template_variables(disabled))
+            notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
+          end
         end
       end
 

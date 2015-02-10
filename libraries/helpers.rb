@@ -53,8 +53,59 @@ module RackspaceCloudMonitoringCookbook
     end
 
     def parsed_target
-      return new_resource.target if new_resource.target
-      fail "You must define a :target for #{new_resource.type}" if %( agent.disk agent.filesystem agent.network ).include?(new_resource.type)
+      return new_resource.target.split if new_resource.target
+      case new_resource.type
+      when 'agent.disk'
+        Chef::Log.warn("No target specified for #{new_resource.type}, looking for target...")
+        target_disk
+      when 'agent.filesystem'
+        Chef::Log.warn("No target specified for #{new_resource.type}, looking for target...")
+        target_filesystem
+      when 'agent.network'
+        Chef::Log.warn("No target specified for #{new_resource.type}, looking for target...")
+        target_network
+      end
+    end
+
+    def target_filesystem
+      target = []
+      excluded_fs = %(tmpfs devtmpfs devpts proc mqueue cgroup efivars sysfs sys securityfs configfs fusectl pstore)
+      unless node['filesystem'].nil?
+        node['filesystem'].each do |key, data|
+          next if data['percent_used'].nil? || data['fs_type'].nil?
+          next if excluded_fs.include?(data['fs_type'])
+          Chef::Log.warn("Found filesystem : #{data['mount']}")
+          target << data['mount']
+        end
+      end
+      target
+    end
+
+    def target_disk
+      target = []
+      node['filesystem'].each do |key, data|
+        if key =~ %r{^/dev/(sd|vd|xvd|hd)[a-z]}
+          Chef::Log.warn("Found disk : #{key}")
+          target << key
+        end
+      end
+      target
+    end
+
+    def target_network
+      Chef::Log.warn("Found default interface : #{node['network']['default_interface']}")
+      node['network']['default_interface'].split
+    end
+
+    def sanitize_target(target, type)
+      case type
+      when 'agent.disk'
+        ::File.basename(target)
+      when 'agent.filesystem'
+        ::File.basename(target).gsub('/', 'slash')
+      when 'agent.network'
+        target
+      end
     end
 
     def parsed_send_warning
@@ -141,20 +192,20 @@ module RackspaceCloudMonitoringCookbook
         {
           'recv' =>
             "if (rate(metric['rx_bytes']) > #{parsed_recv_critical} ) {
-            return new AlarmStatus(CRITICAL, 'Network receive rate on #{parsed_target} is above your critical threshold of #{parsed_recv_critical}B/s');
+            return new AlarmStatus(CRITICAL, 'Network receive rate is above your critical threshold of #{parsed_recv_critical}B/s');
           }
           if (rate(metric['rx_bytes']) > #{parsed_recv_warning} ) {
-            return new AlarmStatus(WARNING, 'Network receive rate on #{parsed_target} is above your warning threshold of #{parsed_recv_warning}B/s');
+            return new AlarmStatus(WARNING, 'Network receive rate is above your warning threshold of #{parsed_recv_warning}B/s');
           }
-          return new AlarmStatus(OK, 'Network receive rate on #{parsed_target} is below your warning threshold of #{parsed_recv_warning}B/s');",
+          return new AlarmStatus(OK, 'Network receive rate is below your warning threshold of #{parsed_recv_warning}B/s');",
           'send' =>
             "if (rate(metric['tx_bytes']) > #{parsed_send_critical}) {
-            return new AlarmStatus(CRITICAL, 'Network transmit rate on #{parsed_target} is above your critical threshold of #{parsed_send_critical}B/s');
+            return new AlarmStatus(CRITICAL, 'Network transmit rate is above your critical threshold of #{parsed_send_critical}B/s');
           }
           if (rate(metric['tx_bytes']) > #{parsed_send_warning}) {
-            return new AlarmStatus(WARNING, 'Network transmit rate on #{parsed_target} is above your warning threshold of #{parsed_send_warning}B/s');
+            return new AlarmStatus(WARNING, 'Network transmit rate is above your warning threshold of #{parsed_send_warning}B/s');
           }
-          return new AlarmStatus(OK, 'Network transmit rate on #{parsed_target} is below your warning threshold of #{parsed_send_warning}B/s');"
+          return new AlarmStatus(OK, 'Network transmit rate is below your warning threshold of #{parsed_send_warning}B/s');"
         }
       when 'remote.http'
         "if (metric['code'] regex '4[0-9][0-9]') {
