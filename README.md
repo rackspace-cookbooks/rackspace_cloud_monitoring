@@ -70,7 +70,7 @@ The :create action handles package installation. The internal configuration file
 
 #### Parameters
 ##### Common to all checks
-* `:label` - optional - A friendly label for a check - Default : Check for `:name`, (type: `:type`)
+* `:label` - optional - A friendly label for a check - Default : *Check for `:type`*
 * `:alarm` - optional - Enable or disable the alarm on a check - Default : false
 * `:alarm_criteria` - optional - Criteria used to trigger alarms - Default : agent specific `./libaries/helpers.rb` => `parsed_alarm_criteria`
 * `:period` - optional - The period in seconds for a check. The value must be greater than the minimum period set on your account -Default : 90
@@ -80,12 +80,12 @@ The :create action handles package installation. The internal configuration file
 * `:notification_plan_id` - optional - Notification plan for the alarms - Default : npTechnicalContactsEmail
 * `:variables` - optional - Additional variables you want to use in the template.`variable_name => 'value'`. It will allow to add attributes to the agent configuration if you need more than the default ones. [Here is an example](https://github.com/rackspace-cookbooks/rackspace_cloud_monitoring/blob/master/test/fixtures/cookbooks/rackspace_cloud_monitoring_check_test/recipes/http.rb#L8-L9) for `remote.http`. If you want to create your own `:template` you can use all the `:variables` with `@variable_name`.
 
-##### Required on some checks (filesystem/disk/network)
+##### Used on some checks (filesystem/disk/network)
 
-* `:target` - required for filesystem/disk/network only -
-  * `disk` : The disk to check (eg '/dev/xvda1')
-  * `filesystem` : The mount point to check (eg '/var' or 'C:')
-  * `network` : The network device to check (eg 'eth0')
+* `:target` - used for filesystem/disk/network only
+  * `disk` : The disk to check (eg '/dev/xvda1') String/Array - Default : Create one file per /dev/(sd|vd|xvd|hd)
+  * `filesystem` : The mount point to check (eg '/var' or 'C:') String/Array - Default : Create one file per filesystem
+  * `network` : The network device to check (eg 'eth0') - Default : Fallback to the default interface
 * `:target_hostname` - required for http only - Server to request for the HTTP check 
 * `:send_warning` - required for network only - Threshold for the default send alarm criteria - Default : 56000
 * `:send_critical` - required for network only - Threshold for the default send alarm criteria - Default : 76000

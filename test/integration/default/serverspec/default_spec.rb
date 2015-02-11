@@ -15,12 +15,12 @@ end
 check_files = %w(
   agent.cpu
   agent.custom
-  agent.disk
-  agent.filesystem
+  agent.disk.xda1
+  agent.filesystem.var
   remote.http
   agent.load
   agent.memory
-  agent.network
+  agent.network.eth0
 )
 check_files.each do |check|
   # Minimal test as content is tested in Chefspecs
