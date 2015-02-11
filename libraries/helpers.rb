@@ -34,7 +34,7 @@ module RackspaceCloudMonitoringCookbook
 
     def parsed_label
       return new_resource.label if new_resource.label
-      "Check for #{new_resource.name}, (type: #{new_resource.type})"
+      "Check for #{new_resource.type}"
     end
 
     def parsed_cloud_credentials_username

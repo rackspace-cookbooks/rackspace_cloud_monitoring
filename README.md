@@ -70,7 +70,7 @@ The :create action handles package installation. The internal configuration file
 
 #### Parameters
 ##### Common to all checks
-* `:label` - optional - A friendly label for a check - Default : Check for `:name`, (type: `:type`)
+* `:label` - optional - A friendly label for a check - Default : *Check for `:type`*
 * `:alarm` - optional - Enable or disable the alarm on a check - Default : false
 * `:alarm_criteria` - optional - Criteria used to trigger alarms - Default : agent specific `./libaries/helpers.rb` => `parsed_alarm_criteria`
 * `:period` - optional - The period in seconds for a check. The value must be greater than the minimum period set on your account -Default : 90

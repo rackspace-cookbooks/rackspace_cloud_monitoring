@@ -21,7 +21,7 @@ class Chef
 
       action :delete do
         define_rackspace_monitoring_agent_service
-        file "#{agent_conf_d}/#{new_resource.name}.yaml" do
+        file "#{agent_conf_d}/#{new_resource.type}.yaml" do
           action :delete
           notifies 'restart', 'service[rackspace-monitoring-agent]', 'delayed'
         end
@@ -45,7 +45,7 @@ class Chef
             variables_with_current_target = parsed_template_variables(disabled)
             # replace 'target' by the current processsed target rather than the whole array
             variables_with_current_target['target'] = target
-            template "#{agent_conf_d}/#{new_resource.name}.#{sanitized_target}.yaml" do
+            template "#{agent_conf_d}/#{new_resource.type}.#{sanitized_target}.yaml" do
               cookbook new_resource.cookbook
               source parsed_template_from_type
               owner 'root'
@@ -56,7 +56,7 @@ class Chef
             end
           end
         else
-          template "#{agent_conf_d}/#{new_resource.name}.yaml" do
+          template "#{agent_conf_d}/#{new_resource.type}.yaml" do
             cookbook new_resource.cookbook
             source parsed_template_from_type
             owner 'root'
