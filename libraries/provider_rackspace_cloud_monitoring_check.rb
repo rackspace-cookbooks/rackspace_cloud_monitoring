@@ -39,6 +39,9 @@ class Chef
       end
 
       def generate_agent_config(disabled = false, targets = nil)
+        # in case the agent directory is missing
+        create_agent_conf_d
+
         if targets && !targets.empty?
           targets.each do |target|
             sanitized_target = sanitize_target(target, new_resource.type)

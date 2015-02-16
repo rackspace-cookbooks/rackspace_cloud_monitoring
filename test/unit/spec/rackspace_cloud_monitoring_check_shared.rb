@@ -1,5 +1,8 @@
 shared_examples_for 'agent config' do |agent, filename|
   filename = agent unless filename
+  it 'creates agent configuration directory' do
+    expect(chef_run).to create_directory('/etc/rackspace-monitoring-agent.conf.d')
+  end
   it 'calls rackspace_cloud_monitoring_check resource' do
     expect(chef_run).to create_rackspace_cloud_monitoring_check(agent)
   end

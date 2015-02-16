@@ -7,6 +7,14 @@ module RackspaceCloudMonitoringCookbook
       '/etc/rackspace-monitoring-agent.conf.d'
     end
 
+    def create_agent_conf_d
+      directory agent_conf_d do
+        owner 'root'
+        group 'root'
+        mode 00755
+      end
+    end
+
     def plugin_path
       '/usr/lib/rackspace-monitoring-agent/plugins'
     end
