@@ -30,11 +30,7 @@ class Chef
         end
 
         # Set directory to put agent configuration
-        directory agent_conf_d do
-          owner 'root'
-          group 'root'
-          mode 00755
-        end
+        create_agent_conf_d
         service_enable
       end
 
