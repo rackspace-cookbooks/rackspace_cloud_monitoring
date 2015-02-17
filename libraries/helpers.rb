@@ -64,7 +64,7 @@ module RackspaceCloudMonitoringCookbook
       return new_resource.target.split if new_resource.target
       case new_resource.type
       when 'agent.disk'
-        Chef::Log.warn("No target specified for #{new_resource.type}, looking for target...")
+        Chef::Log.warn("No target specified for #{new_resource.type}, disabling alarm(as there is not default) and looking for target...")
         target_disk
       when 'agent.filesystem'
         Chef::Log.warn("No target specified for #{new_resource.type}, looking for target...")
@@ -103,6 +103,17 @@ module RackspaceCloudMonitoringCookbook
     def target_network
       Chef::Log.warn("Found default interface : #{node['network']['default_interface']}")
       node['network']['default_interface'].split
+    end
+
+    def parsed_alarm
+      case new_resource.type
+      # Disable alarm for agent_disk if not target was specified
+      when 'agent.disk'
+        return false if new_resource.target && ! new_resource.alarm_criteria
+        return new_resource.alarm
+      else
+        new_resource.alarm
+      end
     end
 
     def sanitize_target(target, type)
@@ -161,14 +172,7 @@ module RackspaceCloudMonitoringCookbook
           return new AlarmStatus(OK, 'Memory usage is below your warning threshold of #{new_resource.warning}%');
         "
       when 'agent.disk'
-        "if (percentage(metric['used'], metric['total']) > #{new_resource.critical} ) {
-            return new AlarmStatus(CRITICAL, 'Disk usage is above your critical threshold of #{new_resource.critical}%');
-          }
-          if (percentage(metric['used'], metric['total']) > #{new_resource.warning} ) {
-            return new AlarmStatus(WARNING, 'Disk usage is above your warning threshold of #{new_resource.warning}%');
-          }
-          return new AlarmStatus(OK, 'Disk usage is below your warning threshold of #{new_resource.warning}%');
-        "
+        fail 'There is no relevant default alarm_criteria for agent.disk, please provide :alarm_criteria' if new_resource.alarm
       when 'agent.cpu'
         "if (metric['usage_average'] > #{new_resource.critical} ) {
             return new AlarmStatus(CRITICAL, 'CPU usage is \#{usage_average}%, above your critical threshold of #{new_resource.critical}%');
@@ -244,7 +248,7 @@ module RackspaceCloudMonitoringCookbook
         label: parsed_label,
         disabled: disabled,
         type: new_resource.type,
-        alarm: new_resource.alarm,
+        alarm: parsed_alarm,
         alarm_criteria: parsed_alarm_criteria,
         period: new_resource.period,
         timeout: new_resource.timeout,

@@ -182,11 +182,27 @@ describe 'rackspace_cloud_monitoring_check_test::* on Centos 6.5' do
           node_resources(node)
           node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.disk'
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+          node.set['rackspace_cloud_monitoring_check_test']['alarm_criteria'] = 'An agent.disk alarm criteria'
         end.converge('rackspace_cloud_monitoring_check_test::default')
       end
       it 'creates a config for each detected target' do
         expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.disk.sda1.yaml').with_content('target: /dev/sda1')
         expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.disk.sda2.yaml').with_content('target: /dev/sda2')
+      end
+      it 'creates an alarm criteria' do
+        expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.disk.sda1.yaml').with_content('An agent.disk alarm criteria')
+      end
+    end
+    context 'rackspace_cloud_monitoring_check for disk without an alarm criteria' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(CENTOS_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.disk'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_check_test::default')
+      end
+      it 'raises an error' do
+        expect { chef_run }.to raise_error(RuntimeError)
       end
     end
   end
