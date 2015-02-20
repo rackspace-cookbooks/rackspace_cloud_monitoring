@@ -109,7 +109,7 @@ module RackspaceCloudMonitoringCookbook
       case new_resource.type
       # Disable alarm for agent_disk if not target was specified
       when 'agent.disk'
-        return false if new_resource.target && ! new_resource.alarm_criteria
+        return false unless new_resource.alarm_criteria
         return new_resource.alarm
       else
         new_resource.alarm
@@ -158,6 +158,7 @@ module RackspaceCloudMonitoringCookbook
     end
 
     # rubocop:disable MethodLength
+    # rubocop:disable Metrics/CyclomaticComplexity
     # FIXME: improve this (store default alarm criteria in a file?)
     def parsed_alarm_criteria
       return new_resource.alarm_criteria if new_resource.alarm_criteria
@@ -172,7 +173,7 @@ module RackspaceCloudMonitoringCookbook
           return new AlarmStatus(OK, 'Memory usage is below your warning threshold of #{new_resource.warning}%');
         "
       when 'agent.disk'
-        fail 'There is no relevant default alarm_criteria for agent.disk, please provide :alarm_criteria' if new_resource.alarm
+        fail 'There is no relevant default alarm_criteria for agent.disk, please provide :alarm_criteria' if new_resource.alarm && new_resource.target
       when 'agent.cpu'
         "if (metric['usage_average'] > #{new_resource.critical} ) {
             return new AlarmStatus(CRITICAL, 'CPU usage is \#{usage_average}%, above your critical threshold of #{new_resource.critical}%');
@@ -230,6 +231,7 @@ module RackspaceCloudMonitoringCookbook
         "
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable MethodLength
 
     def parsed_template_from_type
