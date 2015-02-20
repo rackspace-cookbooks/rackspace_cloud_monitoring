@@ -193,7 +193,20 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
         expect(chef_run).to render_file('/etc/rackspace-monitoring-agent.conf.d/agent.disk.sda1.yaml').with_content('An agent.disk alarm criteria')
       end
     end
-    context 'rackspace_cloud_monitoring_check for disk without an alarm criteria' do
+    context 'rackspace_cloud_monitoring_check for disk with a target but without an alarm criteria' do
+      cached(:chef_run) do
+        ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
+          node_resources(node)
+          node.set['rackspace_cloud_monitoring_check_test']['type'] = 'agent.disk'
+          node.set['rackspace_cloud_monitoring_check_test']['target'] = 'fake_target'
+          node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
+        end.converge('rackspace_cloud_monitoring_check_test::default')
+      end
+      it 'raises an error' do
+        expect { chef_run }.to raise_error(RuntimeError)
+      end
+    end
+    context 'rackspace_cloud_monitoring_check for disk with target discovery and without an alarm criteria' do
       cached(:chef_run) do
         ChefSpec::SoloRunner.new(UBUNTU1204_CHECK_OPTS) do |node|
           node_resources(node)
@@ -201,8 +214,9 @@ describe 'rackspace_cloud_monitoring_check_test::* on Ubuntu 12.04' do
           node.set['rackspace_cloud_monitoring_check_test']['alarm'] = true
         end.converge('rackspace_cloud_monitoring_check_test::default')
       end
-      it 'raises an error' do
-        expect { chef_run }.to raise_error(RuntimeError)
+      it 'disables alarm' do
+        expect(chef_run).to_not render_file('/etc/rackspace-monitoring-agent.conf.d/agent.disk.sda1.yaml').with_content('alarms')
+        expect(chef_run).to_not render_file('/etc/rackspace-monitoring-agent.conf.d/agent.disk.sda5.yaml').with_content('alarms')
       end
     end
   end
