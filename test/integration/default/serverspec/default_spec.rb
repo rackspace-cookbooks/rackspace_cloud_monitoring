@@ -14,7 +14,7 @@ end
 # Checks
 check_files = %w(
   agent.cpu
-  agent.custom
+  remote.ping
   agent.disk.xda1
   agent.filesystem.var
   remote.http
