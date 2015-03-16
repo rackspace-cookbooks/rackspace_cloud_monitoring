@@ -1,6 +1,10 @@
 rackspace_cloud_monitoring CHANGELOG
 ==================
 
+0.0.6
+-----
+- Updated default threshold for Network check
+
 0.0.5
 -----
 - Fixed behavior on auto-target without alarm #10

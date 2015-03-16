@@ -87,10 +87,10 @@ The :create action handles package installation. The internal configuration file
   * `filesystem` : The mount point to check (eg '/var' or 'C:') String/Array - Default : Create one file per filesystem
   * `network` : The network device to check (eg 'eth0') - Default : Fallback to the default interface
 * `:target_hostname` - required for http only - Server to request for the HTTP check 
-* `:send_warning` - required for network only - Threshold for the default send alarm criteria - Default : 56000
-* `:send_critical` - required for network only - Threshold for the default send alarm criteria - Default : 76000
-* `:recv_warning` - required for network only - Threshold for the default receive alarm criteria - Default : 56000
-* `:recv_critical` - required for network only - Threshold for the default send alarm criteria - Default : 76000
+* `:send_warning` - required for network only - Threshold for the default send alarm criteria - Default : 18350080
+* `:send_critical` - required for network only - Threshold for the default send alarm criteria - Default : 24903680
+* `:recv_warning` - required for network only - Threshold for the default receive alarm criteria - Default : 18350080
+* `:recv_critical` - required for network only - Threshold for the default send alarm criteria - Default : 24903680
 
 ##### Plugins attributes
 * `:plugin_url` - optional if `:plugin_filename` has been provided - Url from where to download a plugin. i.e https://raw.githubusercontent.com/racker/rackspace-monitoring-agent-plugins-contrib/master/chef_node_checkin.py
