@@ -21,10 +21,10 @@ class Chef
       # Required on some checks (filesystem/disk/network)
       attribute :target, kind_of: String, default: nil
       attribute :target_hostname, kind_of: String, default: nil
-      attribute :send_warning, kind_of: Fixnum, default: 56_000
-      attribute :send_critical, kind_of: Fixnum, default: 76_000
-      attribute :recv_warning, kind_of: Fixnum, default: 56_000
-      attribute :recv_critical, kind_of: Fixnum, default: 76_000
+      attribute :send_warning, kind_of: Fixnum, default: 18_350_080
+      attribute :send_critical, kind_of: Fixnum, default: 24_903_680
+      attribute :recv_warning, kind_of: Fixnum, default: 18_350_080
+      attribute :recv_critical, kind_of: Fixnum, default: 24_903_680
       # Plugins attributes
       attribute :plugin_url, kind_of: String, default: nil
       attribute :plugin_args, kind_of: Array, default: nil
