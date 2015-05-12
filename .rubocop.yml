@@ -17,6 +17,11 @@ LineLength:
 MethodLength:
   Max: 40
 
+# Increase allowed lines in a module.  Short modules are good, but 100 lines
+#   is a bit too low.
+ModuleLength:
+  Max: 150
+
 # Favor explicit over implicit code: don't complain of "redundant returns"
 RedundantReturn:
   Enabled: false
