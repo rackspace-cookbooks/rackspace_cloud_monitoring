@@ -5,5 +5,5 @@ rackspace_cloud_monitoring_check 'agent.disk' do
   target '/dev/xda1'
   alarm true
   action :create
-  alarm_criteria 'fake_criteria'
+  alarm_criteria '          fake_criteria'
 end

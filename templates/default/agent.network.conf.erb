@@ -15,11 +15,11 @@ alarms:
         label: Network receive rate on <%= @target %>
         notification_plan_id: <%= @notification_plan_id %>
         criteria: |
-          <%= @alarm_criteria['recv'] %>
+<%= @alarm_criteria['recv'] %>
     alarm-network-transmit:
         label: Network transmit rate on <%= @target %>
         notification_plan_id: <%= @notification_plan_id %>
         criteria: |
-          <%= @alarm_criteria['send'] %>
+<%= @alarm_criteria['send'] %>
 <% end %>
 
