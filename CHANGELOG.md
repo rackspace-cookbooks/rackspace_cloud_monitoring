@@ -1,6 +1,11 @@
 rackspace_cloud_monitoring CHANGELOG
 ==================
 
+0.0.7
+-----
+- more integration tests
+- alarm criteria have their own templates
+
 0.0.6
 -----
 - Updated default threshold for Network check
