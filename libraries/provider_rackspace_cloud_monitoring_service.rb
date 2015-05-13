@@ -4,7 +4,7 @@ class Chef
   class Provider
     # Provider definition for rackspace_cloud_monitoring_service
     class RackspaceCloudMonitoringService < Chef::Provider::LWRPBase
-      include RackspaceCloudMonitoringCookbook::Helpers
+      include RackspaceCloudMonitoringCookbook::Helpers::Other
 
       use_inline_resources if defined?(use_inline_resources)
 
