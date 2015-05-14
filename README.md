@@ -3,18 +3,21 @@
 The Rackspace Cloud-monitoring cookbook provides resource primitives (LWRPs) for use in recipes.
 The goal is to offer resources to configure [Rackspace Cloud-monitoring](http://www.rackspace.co.uk/cloud/monitoring)
 
+## In scope
+
+This cookbook focuses on installing the Rackspace monitoring agent and creating check/alarms. Future plans include to support non-cloud servers.
+
+## Out of scope
+
+This cookbook has not been designed to directly call Rackspace API. Instead it relies on the [Rackspace monitoring agent](http://www.rackspace.com/knowledge_center/article/install-and-configure-the-cloud-monitoring-agent).
+
 ## Supported Platforms
 
 * Centos 6.5
 * Ubuntu 12.04
 * Ubuntu 14.04
 
-## Attributes
-
-<!---
-node['rackspace_cloud_monitoring']['cloud_credentials_username']
-node['rackspace_cloud_monitoring']['cloud_credentials_api_key']
--->
+Windows is not supported yet.
 
 ## Usage
 
@@ -201,4 +204,4 @@ end
 
 ## License and Authors
 
-Author:: Julien Berard (jujugrrr@gmail.com)
+Authors:: Julien Berard (julien.berard@rackspace.co.uk)
