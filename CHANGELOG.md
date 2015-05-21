@@ -1,6 +1,10 @@
 rackspace_cloud_monitoring CHANGELOG
 ==================
 
+0.0.8
+-----
+- fixed memory alarm logic template
+
 0.0.7
 -----
 - more integration tests
